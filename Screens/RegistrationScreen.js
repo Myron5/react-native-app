@@ -3,6 +3,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   ImageBackground,
   TextInput,
   TouchableOpacity,
@@ -13,26 +14,42 @@ import {
   Dimensions,
 } from "react-native";
 import { OpenURLButton } from "../Components";
+import { pickPhoto } from "../helpers/pickPhoto";
+import { returnBase64 } from "../helpers/returnBase64";
 
 const initialState = {
+  photoURI: "",
+  login: "",
   email: "",
   password: "",
 };
 
-export default LoginScreen = () => {
+export default RegistrationScreen = () => {
   const [state, setState] = useState(initialState);
   const [isSecure, setIsSecure] = useState(true);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [dimensions, setDimensions] = useState({});
+
+  const handleOnUserLoad = async () => {
+    const photoURI = await pickPhoto();
+    if (!photoURI) return;
+    setState((prevState) => ({ ...prevState, photoURI }));
+  };
+
+  const handleonUserCancel = () => {
+    setState((prevState) => ({ ...prevState, photoURI: "" }));
+  };
 
   const keyboardHide = () => {
     setIsKeyboardShown(false);
     Keyboard.dismiss();
   };
 
-  const handleOnSubmit = () => {
+  const handleOnSubmit = async () => {
     keyboardHide();
-    console.log(state);
+    const image = await returnBase64(photoURI);
+    console.log("IMAGE : ", image);
+    console.log("STATE : ", state);
     setState(initialState);
   };
 
@@ -45,14 +62,14 @@ export default LoginScreen = () => {
 
       if (verticalState) {
         setDimensions(() => ({
-          mBotIsKeyboard: 32,
-          mBotNoKeyboard: 110,
+          mBotIsKeyboard: 8,
+          mBotNoKeyboard: 50,
           marginHorizontal: 16,
         }));
       } else {
         setDimensions(() => ({
-          mBotIsKeyboard: 8,
-          mBotNoKeyboard: 16,
+          mBotIsKeyboard: 4,
+          mBotNoKeyboard: 8,
           marginHorizontal: 32,
         }));
       }
@@ -72,7 +89,41 @@ export default LoginScreen = () => {
           style={styles.backgroundImage}
         >
           <View style={styles.lowerBox}>
-            <Text style={styles.mainTitle}>Увійти</Text>
+            <TouchableOpacity
+              onPress={handleOnUserLoad}
+              style={styles.fileInput}
+              activeOpacity={1}
+            >
+              {state.photoURI ? (
+                <>
+                  <Image
+                    source={{ uri: state.photoURI }}
+                    style={styles.userImage}
+                  />
+                  <TouchableOpacity
+                    onPress={handleonUserCancel}
+                    style={styles.addCloseBtn}
+                  >
+                    <Image
+                      source={require("../assets/close.png")}
+                      style={styles.addCloseImage}
+                    />
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity
+                  onPress={handleOnUserLoad}
+                  style={styles.addCloseBtn}
+                >
+                  <Image
+                    source={require("../assets/add.png")}
+                    style={styles.addCloseImage}
+                  />
+                </TouchableOpacity>
+              )}
+            </TouchableOpacity>
+
+            <Text style={styles.mainTitle}>Реєстрація</Text>
 
             <KeyboardAvoidingView
               behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -85,8 +136,22 @@ export default LoginScreen = () => {
               >
                 <View>
                   <TextInput
+                    value={state.login}
+                    onChangeText={(login) =>
+                      setState((prevState) => ({ ...prevState, login }))
+                    }
+                    onFocus={() => setIsKeyboardShown(true)}
+                    style={{ ...styles.input, marginTop: 0 }}
+                    placeholder={"Логін"}
+                  />
+                </View>
+
+                <View>
+                  <TextInput
                     value={state.email}
-                    onChangeText={(email) => setState({ ...state, email })}
+                    onChangeText={(email) =>
+                      setState((prevState) => ({ ...prevState, email }))
+                    }
                     onFocus={() => setIsKeyboardShown(true)}
                     style={styles.input}
                     placeholder={"Адреса електронної пошти"}
@@ -98,7 +163,7 @@ export default LoginScreen = () => {
                     value={state.password}
                     maxLength={32}
                     onChangeText={(password) =>
-                      setState({ ...state, password })
+                      setState((prevState) => ({ ...prevState, password }))
                     }
                     onFocus={() => setIsKeyboardShown(true)}
                     style={styles.input}
@@ -131,10 +196,8 @@ export default LoginScreen = () => {
                   : dimensions.mBotNoKeyboard,
               }}
             >
-              Немає акаунту?
-              <OpenURLButton url={"https://google.com"}>
-                Зареєструватися
-              </OpenURLButton>
+              Вже є акаунт?
+              <OpenURLButton url={"https://google.com"}>Увійти</OpenURLButton>
             </Text>
           </View>
         </ImageBackground>
@@ -158,14 +221,48 @@ const styles = StyleSheet.create({
   },
 
   lowerBox: {
+    position: "relative",
+
     flex: 1,
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
 
+  fileInput: {
+    position: "absolute",
+    top: "0%",
+    left: "50%",
+    transform: [{ translateX: -60 }, { translateY: -60 }],
+
+    width: 120,
+    height: 120,
+
+    backgroundColor: "#f6f6f6",
+    borderRadius: 16,
+  },
+
+  userImage: {
+    width: 120,
+    height: 120,
+
+    borderRadius: 16,
+  },
+
+  addCloseBtn: {
+    position: "absolute",
+    top: "100%",
+    left: "100%",
+    transform: [{ translateX: -15 }, { translateY: -38 }],
+  },
+
+  addCloseImage: {
+    width: 25,
+    height: 25,
+  },
+
   mainTitle: {
-    marginTop: 32,
+    marginTop: 92,
 
     fontFamily: "Roboto-Medium",
     fontWeight: 500,
@@ -178,11 +275,11 @@ const styles = StyleSheet.create({
   },
 
   passwordBox: {
-    marginTop: 16,
     position: "relative",
   },
 
   input: {
+    marginTop: 16,
     paddingLeft: 16,
     paddingRight: 100,
     height: 50,
@@ -193,9 +290,9 @@ const styles = StyleSheet.create({
     color: "#bdbdbd",
 
     backgroundColor: "#f6f6f6",
-    borderColor: "#e8e8e8",
-    borderStyle: "solid",
     borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: "#e8e8e8",
     borderRadius: 8,
   },
 
@@ -203,7 +300,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: "50%",
     left: "100%",
-    transform: [{ translateX: -88 }, { translateY: -10 }],
+    transform: [{ translateX: -88 }, { translateY: -3 }],
 
     fontFamily: "Roboto-Regular",
     fontSize: 16,

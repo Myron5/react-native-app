@@ -6,7 +6,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { Asset } from "expo-asset";
 
 import { View, StyleSheet } from "react-native";
-import LoginScreen from "./Screens/LoginScreen";
+// import LoginScreen from "./Screens/LoginScreen";
+import RegistrationScreen from "./Screens/RegistrationScreen";
 
 const loadFonts = async () => {
   await Font.loadAsync({
@@ -17,7 +18,11 @@ const loadFonts = async () => {
 };
 
 const _cacheResourcesAsync = async () => {
-  const images = [require("./assets/background-main.jpg")];
+  const images = [
+    require("./assets/background-main.jpg"),
+    require("./assets/add.png"),
+    require("./assets/close.png"),
+  ];
 
   const cacheImages = images.map((image) => {
     return Asset.fromModule(image).downloadAsync();
@@ -61,7 +66,7 @@ export default App = () => {
 
   return (
     <View onLayout={onLayoutRootView} style={styles.container}>
-      <LoginScreen />
+      <RegistrationScreen />
     </View>
   );
 };
