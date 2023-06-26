@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet,
   Text,
   View,
   ImageBackground,
@@ -11,85 +10,102 @@ import {
   Keyboard,
   Platform,
   Dimensions,
-} from "react-native";
-import { OpenURLButton } from "../Components";
+} from 'react-native';
+
+import { OpenURLButton } from '../Components';
+import { styles } from '../Styles/LoginRegistration';
 
 const initialState = {
-  email: "",
-  password: "",
+  email: '',
+  password: '',
 };
 
-export default LoginScreen = () => {
+export const LoginScreen = () => {
   const [state, setState] = useState(initialState);
   const [isSecure, setIsSecure] = useState(true);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [dimensions, setDimensions] = useState({});
-
-  const keyboardHide = () => {
-    setIsKeyboardShown(false);
-    Keyboard.dismiss();
-  };
+  const [focused, setFocused] = useState(null);
 
   const handleOnSubmit = () => {
-    keyboardHide();
+    Keyboard.dismiss();
     console.log(state);
     setState(initialState);
   };
 
+  const handleOnFocusInput = inputNumber => {
+    return () => {
+      setFocused(inputNumber);
+    };
+  };
+
+  const handleOnBlurInput = () => {
+    setFocused(null);
+  };
+
+  const toggleSecure = () => {
+    setIsSecure(toggle => !toggle);
+  };
+
   useEffect(() => {
-    const onChange = () => {
-      const width = Dimensions.get("window").width;
-      const height = Dimensions.get("window").height;
+    const onResizeAction = () => {
+      const width = Dimensions.get('window').width;
+      const height = Dimensions.get('window').height;
 
       const verticalState = height > width;
 
       if (verticalState) {
         setDimensions(() => ({
-          mBotIsKeyboard: 32,
-          mBotNoKeyboard: 110,
+          vertical: true,
+          mBotIsKeyboard: 30,
           marginHorizontal: 16,
         }));
       } else {
         setDimensions(() => ({
-          mBotIsKeyboard: 8,
-          mBotNoKeyboard: 16,
+          vertical: false,
+          mBotIsKeyboard: 16,
           marginHorizontal: 32,
         }));
       }
     };
+    onResizeAction();
 
-    onChange();
-    const subscription = Dimensions.addEventListener("change", onChange);
+    const onKeyboardHideAction = () => {
+      setIsKeyboardShown(false);
+    };
 
-    return () => subscription?.remove();
+    const onKeyboardShowAction = () => {
+      setIsKeyboardShown(true);
+    };
+
+    const resizeRubscription = Dimensions.addEventListener('change', onResizeAction);
+    const keyboardHideSubscription = Keyboard.addListener('keyboardDidHide', onKeyboardHideAction);
+    const keyboardShowSubscription = Keyboard.addListener('keyboardDidShow', onKeyboardShowAction);
+
+    return () => {
+      resizeRubscription?.remove();
+      keyboardShowSubscription?.remove();
+      keyboardHideSubscription?.remove();
+    };
   }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={keyboardHide}>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
-        <ImageBackground
-          source={require("../assets/background-main.jpg")}
-          style={styles.backgroundImage}
-        >
+        <ImageBackground source={require('../assets/background-main.jpg')} style={styles.backgroundImage}>
           <View style={styles.lowerBox}>
             <Text style={styles.mainTitle}>Увійти</Text>
 
-            <KeyboardAvoidingView
-              behavior={Platform.OS == "ios" ? "padding" : "height"}
-            >
-              <View
-                style={{
-                  ...styles.form,
-                  marginHorizontal: dimensions.marginHorizontal,
-                }}
-              >
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+              <View style={styles.form(dimensions, isKeyboardShown)}>
                 <View>
                   <TextInput
                     value={state.email}
-                    onChangeText={(email) => setState({ ...state, email })}
-                    onFocus={() => setIsKeyboardShown(true)}
-                    style={styles.input}
-                    placeholder={"Адреса електронної пошти"}
+                    onChangeText={email => setState({ ...state, email })}
+                    onFocus={handleOnFocusInput(1)}
+                    onBlur={handleOnBlurInput}
+                    style={styles.input(focused, 1)}
+                    placeholder={'Адреса електронної пошти'}
                   />
                 </View>
 
@@ -97,44 +113,28 @@ export default LoginScreen = () => {
                   <TextInput
                     value={state.password}
                     maxLength={32}
-                    onChangeText={(password) =>
-                      setState({ ...state, password })
-                    }
-                    onFocus={() => setIsKeyboardShown(true)}
-                    style={styles.input}
-                    placeholder={"Пароль"}
+                    onChangeText={password => setState({ ...state, password })}
+                    onFocus={handleOnFocusInput(2)}
+                    onBlur={handleOnBlurInput}
+                    style={styles.input(focused, 2)}
+                    placeholder={'Пароль'}
                     secureTextEntry={isSecure}
                   />
 
-                  <Text
-                    onPress={() => setIsSecure((toggle) => !toggle)}
-                    style={styles.togglePasswordTxt}
-                  >
+                  <Text onPress={toggleSecure} style={styles.togglePasswordTxt}>
                     Показати
                   </Text>
                 </View>
 
-                <TouchableOpacity
-                  onPress={handleOnSubmit}
-                  style={styles.button}
-                >
+                <TouchableOpacity onPress={handleOnSubmit} style={styles.button}>
                   <Text style={styles.buttonText}>Увійти</Text>
                 </TouchableOpacity>
               </View>
             </KeyboardAvoidingView>
 
-            <Text
-              style={{
-                ...styles.additionalText,
-                marginBottom: isKeyboardShown
-                  ? dimensions.mBotIsKeyboard
-                  : dimensions.mBotNoKeyboard,
-              }}
-            >
+            <Text style={styles.additionalText}>
               Немає акаунту?
-              <OpenURLButton url={"https://google.com"}>
-                Зареєструватися
-              </OpenURLButton>
+              <OpenURLButton url={'https://google.com'}>Зареєструватися</OpenURLButton>
             </Text>
           </View>
         </ImageBackground>
@@ -142,111 +142,3 @@ export default LoginScreen = () => {
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-
-  backgroundImage: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    resizeMode: "cover",
-  },
-
-  lowerBox: {
-    flex: 1,
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-  },
-
-  mainTitle: {
-    marginTop: 32,
-
-    fontFamily: "Roboto-Medium",
-    fontWeight: 500,
-    fontSize: 30,
-    textAlign: "center",
-  },
-
-  form: {
-    marginTop: 32,
-  },
-
-  passwordBox: {
-    marginTop: 16,
-    position: "relative",
-  },
-
-  input: {
-    paddingLeft: 16,
-    paddingRight: 100,
-    height: 50,
-
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    lineHeight: 19,
-    color: "#bdbdbd",
-
-    backgroundColor: "#f6f6f6",
-    borderColor: "#e8e8e8",
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderRadius: 8,
-  },
-
-  togglePasswordTxt: {
-    position: "absolute",
-    top: "50%",
-    left: "100%",
-    transform: [{ translateX: -88 }, { translateY: -10 }],
-
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    lineHeight: 19,
-    color: "#1b4371",
-  },
-
-  button: {
-    height: 50,
-    marginTop: 45,
-    paddingTop: 16,
-    paddingBottom: 16,
-
-    borderWidth: 1,
-    borderStyle: "solid",
-    borderColor: "#ff6c00",
-    borderRadius: 100,
-
-    ...Platform.select({
-      ios: {
-        backgroundColor: "transparent",
-      },
-      android: {
-        backgroundColor: "#ff6c00",
-      },
-    }),
-  },
-
-  buttonText: {
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    lineHeight: 19,
-    textAlign: "center",
-    color: Platform.OS == "ios" ? "#ff6c00" : "#fff",
-  },
-
-  additionalText: {
-    marginTop: 32,
-
-    fontFamily: "Roboto-Regular",
-    fontSize: 16,
-    lineHeight: 19,
-    textAlign: "center",
-    color: "#1b4371",
-  },
-});
