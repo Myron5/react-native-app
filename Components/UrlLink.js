@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { Text, Linking, Alert, StyleSheet } from 'react-native';
+import { Text, Linking, StyleSheet } from 'react-native';
+import { showToast } from './';
 
 export const UrlLink = ({ url, children }) => {
   const handlePress = useCallback(async () => {
@@ -8,7 +9,7 @@ export const UrlLink = ({ url, children }) => {
     if (supported) {
       await Linking.openURL(url);
     } else {
-      Alert.alert(`Don't know how to open this URL: ${url}`);
+      showToast(`Don't know how to open this URL: ${url}`);
     }
   }, [url]);
 

@@ -1,7 +1,7 @@
 import { View, KeyboardAvoidingView, StyleSheet, Keyboard, Platform } from 'react-native';
 import React, { useState } from 'react';
 
-import { InputEmail, InputPassword, ButtonForm } from '../Components';
+import { InputEmail, InputPassword, ButtonForm } from './';
 
 const initialState = {
   email: '',

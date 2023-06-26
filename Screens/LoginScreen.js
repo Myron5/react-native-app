@@ -4,8 +4,8 @@ import { Text, Keyboard, Dimensions, StyleSheet } from 'react-native';
 import { FormContainer, LoginForm, FormLink } from '../Components';
 
 export const LoginScreen = () => {
-  const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [dimensions, setDimensions] = useState({});
+  const [isKeyboardShown, setIsKeyboardShown] = useState(false);
 
   useEffect(() => {
     const onResizeAction = () => {
