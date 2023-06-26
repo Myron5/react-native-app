@@ -40,6 +40,10 @@ export const RegistrationScreen = () => {
     setState(initialState);
   };
 
+  const handleOnChangeText = key => {
+    return value => setState(prevState => ({ ...prevState, [key]: value }));
+  };
+
   const handleOnUserLoad = async () => {
     const photoURI = await pickPhoto();
     if (!photoURI) return;
@@ -134,7 +138,7 @@ export const RegistrationScreen = () => {
                 <View>
                   <TextInput
                     value={state.login}
-                    onChangeText={login => setState(prevState => ({ ...prevState, login }))}
+                    onChangeText={handleOnChangeText('login')}
                     onFocus={handleOnFocusInput(1)}
                     onBlur={handleOnBlurInput}
                     style={styles.input(focused, 1)}
@@ -145,7 +149,7 @@ export const RegistrationScreen = () => {
                 <View>
                   <TextInput
                     value={state.email}
-                    onChangeText={email => setState(prevState => ({ ...prevState, email }))}
+                    onChangeText={handleOnChangeText('email')}
                     onFocus={handleOnFocusInput(2)}
                     onBlur={handleOnBlurInput}
                     style={styles.input(focused, 2)}
@@ -157,7 +161,7 @@ export const RegistrationScreen = () => {
                   <TextInput
                     value={state.password}
                     maxLength={32}
-                    onChangeText={password => setState(prevState => ({ ...prevState, password }))}
+                    onChangeText={handleOnChangeText('password')}
                     onFocus={handleOnFocusInput(3)}
                     onBlur={handleOnBlurInput}
                     style={styles.input(focused, 3)}

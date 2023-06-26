@@ -1,6 +1,6 @@
-import Toast from "react-native-root-toast";
+import Toast from 'react-native-root-toast';
 
-export const showToast = (message) => {
+export const showToast = message => {
   Toast.show(message, {
     duration: Toast.durations.SHORT,
     position: 50,

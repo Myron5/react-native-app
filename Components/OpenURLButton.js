@@ -1,5 +1,5 @@
-import { useCallback } from "react";
-import { Text, Linking, Alert, StyleSheet } from "react-native";
+import { useCallback } from 'react';
+import { Text, Linking, Alert, StyleSheet } from 'react-native';
 
 export const OpenURLButton = ({ url, children }) => {
   const handlePress = useCallback(async () => {
@@ -14,7 +14,7 @@ export const OpenURLButton = ({ url, children }) => {
 
   return (
     <>
-      {" "}
+      {' '}
       <Text onPress={handlePress} style={styles.url}>
         {children}
       </Text>
@@ -24,6 +24,6 @@ export const OpenURLButton = ({ url, children }) => {
 
 const styles = StyleSheet.create({
   url: {
-    textDecorationLine: "underline",
+    textDecorationLine: 'underline',
   },
 });

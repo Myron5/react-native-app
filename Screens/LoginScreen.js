@@ -33,6 +33,10 @@ export const LoginScreen = () => {
     setState(initialState);
   };
 
+  const handleOnChangeText = key => {
+    return value => setState(prevState => ({ ...prevState, [key]: value }));
+  };
+
   const handleOnFocusInput = inputNumber => {
     return () => {
       setFocused(inputNumber);
@@ -101,7 +105,7 @@ export const LoginScreen = () => {
                 <View>
                   <TextInput
                     value={state.email}
-                    onChangeText={email => setState({ ...state, email })}
+                    onChangeText={handleOnChangeText('email')}
                     onFocus={handleOnFocusInput(1)}
                     onBlur={handleOnBlurInput}
                     style={styles.input(focused, 1)}
@@ -113,7 +117,7 @@ export const LoginScreen = () => {
                   <TextInput
                     value={state.password}
                     maxLength={32}
-                    onChangeText={password => setState({ ...state, password })}
+                    onChangeText={handleOnChangeText('password')}
                     onFocus={handleOnFocusInput(2)}
                     onBlur={handleOnBlurInput}
                     style={styles.input(focused, 2)}

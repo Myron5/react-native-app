@@ -1,5 +1,5 @@
-import * as ImagePicker from "expo-image-picker";
-import { showToast } from "../Components";
+import * as ImagePicker from 'expo-image-picker';
+import { showToast } from '../Components';
 
 export const pickPhoto = async () => {
   try {
@@ -11,15 +11,15 @@ export const pickPhoto = async () => {
     });
 
     if (data.canceled) {
-      showToast("Скасовано");
+      showToast('Скасовано');
       return;
     } else if (data.assets[0].fileSize > 5242880) {
-      showToast("Розмір файлу занадто великий");
+      showToast('Розмір файлу занадто великий');
       return;
     }
 
     return data.assets[0].uri;
   } catch (err) {
-    console.log("Error picking file : ", err.message);
+    console.log('Error picking file : ', err.message);
   }
 };
