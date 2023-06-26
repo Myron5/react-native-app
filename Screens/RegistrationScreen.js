@@ -12,10 +12,9 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-import { OpenURLButton } from '../Components';
-import { pickPhoto } from '../helpers/pickPhoto';
-import { returnBase64 } from '../helpers/returnBase64';
+import { pickPhoto, returnBase64 } from '../helpers';
 import { styles } from '../Styles/LoginRegistration';
 
 const initialState = {
@@ -27,6 +26,8 @@ const initialState = {
 
 export const RegistrationScreen = () => {
   const [state, setState] = useState(initialState);
+  const navigation = useNavigation();
+
   const [isSecure, setIsSecure] = useState(true);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [dimensions, setDimensions] = useState({});
@@ -75,6 +76,12 @@ export const RegistrationScreen = () => {
   const toggleSecure = () => {
     return () => {
       setIsSecure(toggle => !toggle);
+    };
+  };
+
+  const goToLogin = () => {
+    return () => {
+      navigation.navigate('Login');
     };
   };
 
@@ -192,7 +199,9 @@ export const RegistrationScreen = () => {
 
             <Text style={styles.additionalTextReg}>
               Вже є акаунт?
-              <OpenURLButton url={'https://google.com'}>Увійти</OpenURLButton>
+              <TouchableOpacity onPress={goToLogin()}>
+                <Text style={styles.url}>Увійти</Text>
+              </TouchableOpacity>
             </Text>
           </View>
         </ImageBackground>

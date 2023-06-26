@@ -1,31 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-
-import * as Font from 'expo-font';
-
-import * as SplashScreen from 'expo-splash-screen';
-import { Asset } from 'expo-asset';
-
 import { View, StyleSheet } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import 'react-native-gesture-handler';
+
+import { _cacheResourcesAsync, loadFonts } from './helpers';
 import { LoginScreen } from './Screens/LoginScreen';
 import { RegistrationScreen } from './Screens/RegistrationScreen';
 
-const loadFonts = async () => {
-  await Font.loadAsync({
-    'Roboto-Regular': require('./assets/fonts/Roboto/Roboto-Regular.ttf'),
-    'Roboto-Medium': require('./assets/fonts/Roboto/Roboto-Medium.ttf'),
-    'Roboto-Bold': require('./assets/fonts/Roboto/Roboto-Bold.ttf'),
-  });
-};
-
-const _cacheResourcesAsync = async () => {
-  const images = [require('./assets/background-main.jpg'), require('./assets/add.png'), require('./assets/close.png')];
-
-  const cacheImages = images.map(image => {
-    return Asset.fromModule(image).downloadAsync();
-  });
-
-  return Promise.all(cacheImages);
-};
+const MainStack = createStackNavigator();
 
 const fullLoad = async () => {
   await loadFonts();
@@ -62,7 +47,12 @@ export default App = () => {
 
   return (
     <View onLayout={onLayoutRootView} style={styles.container}>
-      <LoginScreen />
+      <NavigationContainer>
+        <MainStack.Navigator initialRouteName="Registration">
+          <MainStack.Screen name="Registration" component={RegistrationScreen} />
+          <MainStack.Screen name="Login" component={LoginScreen} />
+        </MainStack.Navigator>
+      </NavigationContainer>
     </View>
   );
 };

@@ -175,4 +175,8 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#1b4371',
   },
+
+  url: {
+    textDecorationLine: 'underline',
+  },
 });

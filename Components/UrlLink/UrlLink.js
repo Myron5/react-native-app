@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Text, Linking, Alert, StyleSheet } from 'react-native';
 
-export const OpenURLButton = ({ url, children }) => {
+export const UrlLink = ({ url, children }) => {
   const handlePress = useCallback(async () => {
     const supported = await Linking.canOpenURL(url);
 
