@@ -32,26 +32,32 @@ export const RegistrationScreen = () => {
   const [dimensions, setDimensions] = useState({});
   const [focused, setFocused] = useState(null);
 
-  const handleOnSubmit = async () => {
-    Keyboard.dismiss();
-    const image = await returnBase64(photoURI);
-    console.log('IMAGE : ', image);
-    console.log('STATE : ', state);
-    setState(initialState);
+  const handleOnSubmit = () => {
+    return async () => {
+      Keyboard.dismiss();
+      const image = await returnBase64(photoURI);
+      console.log('IMAGE : ', image);
+      console.log('STATE : ', state);
+      setState(initialState);
+    };
   };
 
   const handleOnChangeText = key => {
     return value => setState(prevState => ({ ...prevState, [key]: value }));
   };
 
-  const handleOnUserLoad = async () => {
-    const photoURI = await pickPhoto();
-    if (!photoURI) return;
-    setState(prevState => ({ ...prevState, photoURI }));
+  const handleOnUserLoad = () => {
+    return async () => {
+      const photoURI = await pickPhoto();
+      if (!photoURI) return;
+      setState(prevState => ({ ...prevState, photoURI }));
+    };
   };
 
   const handleonUserCancel = () => {
-    setState(prevState => ({ ...prevState, photoURI: '' }));
+    return () => {
+      setState(prevState => ({ ...prevState, photoURI: '' }));
+    };
   };
 
   const handleOnFocusInput = inputNumber => {
@@ -61,11 +67,15 @@ export const RegistrationScreen = () => {
   };
 
   const handleOnBlurInput = () => {
-    setFocused(null);
+    return () => {
+      setFocused(null);
+    };
   };
 
   const toggleSecure = () => {
-    setIsSecure(toggle => !toggle);
+    return () => {
+      setIsSecure(toggle => !toggle);
+    };
   };
 
   useEffect(() => {
@@ -116,16 +126,16 @@ export const RegistrationScreen = () => {
       <View style={styles.container}>
         <ImageBackground source={require('../assets/background-main.jpg')} style={styles.backgroundImage}>
           <View style={styles.lowerBox}>
-            <TouchableOpacity onPress={handleOnUserLoad} style={styles.fileInput} activeOpacity={1}>
+            <TouchableOpacity onPress={handleOnUserLoad()} style={styles.fileInput} activeOpacity={1}>
               {state.photoURI ? (
                 <>
                   <Image source={{ uri: state.photoURI }} style={styles.userImage} />
-                  <TouchableOpacity onPress={handleonUserCancel} style={styles.addCloseBtn}>
+                  <TouchableOpacity onPress={handleonUserCancel()} style={styles.addCloseBtn}>
                     <Image source={require('../assets/close.png')} style={styles.addCloseImage} />
                   </TouchableOpacity>
                 </>
               ) : (
-                <TouchableOpacity onPress={handleOnUserLoad} style={styles.addCloseBtn}>
+                <TouchableOpacity onPress={handleOnUserLoad()} style={styles.addCloseBtn}>
                   <Image source={require('../assets/add.png')} style={styles.addCloseImage} />
                 </TouchableOpacity>
               )}
@@ -140,7 +150,7 @@ export const RegistrationScreen = () => {
                     value={state.login}
                     onChangeText={handleOnChangeText('login')}
                     onFocus={handleOnFocusInput(1)}
-                    onBlur={handleOnBlurInput}
+                    onBlur={handleOnBlurInput()}
                     style={styles.input(focused, 1)}
                     placeholder={'Логін'}
                   />
@@ -151,7 +161,7 @@ export const RegistrationScreen = () => {
                     value={state.email}
                     onChangeText={handleOnChangeText('email')}
                     onFocus={handleOnFocusInput(2)}
-                    onBlur={handleOnBlurInput}
+                    onBlur={handleOnBlurInput()}
                     style={styles.input(focused, 2)}
                     placeholder={'Адреса електронної пошти'}
                   />
@@ -163,18 +173,18 @@ export const RegistrationScreen = () => {
                     maxLength={32}
                     onChangeText={handleOnChangeText('password')}
                     onFocus={handleOnFocusInput(3)}
-                    onBlur={handleOnBlurInput}
+                    onBlur={handleOnBlurInput()}
                     style={styles.input(focused, 3)}
                     placeholder={'Пароль'}
                     secureTextEntry={isSecure}
                   />
 
-                  <Text onPress={toggleSecure} style={styles.togglePasswordTxtReg}>
+                  <Text onPress={toggleSecure()} style={styles.togglePasswordTxtReg}>
                     Показати
                   </Text>
                 </View>
 
-                <TouchableOpacity onPress={handleOnSubmit} style={styles.button}>
+                <TouchableOpacity onPress={handleOnSubmit()} style={styles.button}>
                   <Text style={styles.buttonText}>Увійти</Text>
                 </TouchableOpacity>
               </View>

@@ -28,9 +28,11 @@ export const LoginScreen = () => {
   const [focused, setFocused] = useState(null);
 
   const handleOnSubmit = () => {
-    Keyboard.dismiss();
-    console.log(state);
-    setState(initialState);
+    return () => {
+      Keyboard.dismiss();
+      console.log(state);
+      setState(initialState);
+    };
   };
 
   const handleOnChangeText = key => {
@@ -44,11 +46,15 @@ export const LoginScreen = () => {
   };
 
   const handleOnBlurInput = () => {
-    setFocused(null);
+    return () => {
+      setFocused(null);
+    };
   };
 
   const toggleSecure = () => {
-    setIsSecure(toggle => !toggle);
+    return () => {
+      setIsSecure(toggle => !toggle);
+    };
   };
 
   useEffect(() => {
@@ -107,7 +113,7 @@ export const LoginScreen = () => {
                     value={state.email}
                     onChangeText={handleOnChangeText('email')}
                     onFocus={handleOnFocusInput(1)}
-                    onBlur={handleOnBlurInput}
+                    onBlur={handleOnBlurInput()}
                     style={styles.input(focused, 1)}
                     placeholder={'Адреса електронної пошти'}
                   />
@@ -119,18 +125,18 @@ export const LoginScreen = () => {
                     maxLength={32}
                     onChangeText={handleOnChangeText('password')}
                     onFocus={handleOnFocusInput(2)}
-                    onBlur={handleOnBlurInput}
+                    onBlur={handleOnBlurInput()}
                     style={styles.input(focused, 2)}
                     placeholder={'Пароль'}
                     secureTextEntry={isSecure}
                   />
 
-                  <Text onPress={toggleSecure} style={styles.togglePasswordTxt}>
+                  <Text onPress={toggleSecure()} style={styles.togglePasswordTxt}>
                     Показати
                   </Text>
                 </View>
 
-                <TouchableOpacity onPress={handleOnSubmit} style={styles.button}>
+                <TouchableOpacity onPress={handleOnSubmit()} style={styles.button}>
                   <Text style={styles.buttonText}>Увійти</Text>
                 </TouchableOpacity>
               </View>
